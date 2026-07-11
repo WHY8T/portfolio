@@ -1,0 +1,355 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   DESIGN TOKENS
+   Palette:
+     --void        : deep space background
+     --panel       : glass panel base (used with alpha)
+     --accent      : electric violet (primary glow / interactive color)
+     --accent-dim  : deeper violet for gradients / borders
+     --teal        : secondary cosmic accent, used sparingly for depth cues
+     --star        : near-white starlight for headings/text
+     --muted       : muted lavender-grey for body copy
+   Type:
+     --font-display: Space Grotesk (headings — geometric, futuristic)
+     --font-body   : Inter (body copy)
+     --font-mono   : JetBrains Mono (labels, tags, tech chips, eyebrows)
+------------------------------------------------------------------ */
+@theme {
+  --color-void: #05060f;
+  --color-panel: #0b0e1c;
+  --color-accent: #8b5cf6;
+  --color-accent-dim: #4c1d95;
+  --color-teal: #2dd4bf;
+  --color-star: #f5f3ff;
+  --color-muted: #9497b3;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-star);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Hide native cursor only on devices that actually have a fine pointer (desktop) */
+@media (hover: none), (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-void);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-void);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-accent-dim), var(--color-accent));
+  border-radius: 8px;
+}
+
+/* Glass panel utility */
+.glass {
+  background: rgba(11, 14, 28, 0.68);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+}
+
+.glow-border {
+  position: relative;
+}
+.glow-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.6), rgba(45, 212, 191, 0.15), transparent 70%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, #f5f3ff 0%, #c4b5fd 45%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Focus visibility */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* -----------------------------------------------------------------
+   HOLOGRAPHIC ID CARD (Hero)
+------------------------------------------------------------------ */
+@property --holo-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.holo-border {
+  --holo-angle: 0deg;
+  position: relative;
+}
+.holo-border::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--holo-angle),
+    #8b5cf6,
+    #2dd4bf,
+    #f5f3ff,
+    #ec4899,
+    #8b5cf6
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: holo-spin 5s linear infinite;
+  filter: saturate(1.3);
+}
+@keyframes holo-spin {
+  to {
+    --holo-angle: 360deg;
+  }
+}
+
+.holo-sheen {
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.35),
+    rgba(139, 92, 246, 0.25) 25%,
+    rgba(45, 212, 191, 0.2) 45%,
+    transparent 65%
+  );
+  mix-blend-mode: color-dodge;
+  opacity: 0.55;
+}
+
+.hero-glow {
+  background: conic-gradient(
+    from 0deg,
+    rgba(139, 92, 246, 0.5),
+    rgba(45, 212, 191, 0.35),
+    rgba(236, 72, 153, 0.35),
+    rgba(139, 92, 246, 0.5)
+  );
+  filter: blur(90px);
+  animation: holo-drift 14s linear infinite;
+  opacity: 0.35;
+}
+@keyframes holo-drift {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.15);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+/* Soft, eased glow on the name — a calm light instead of a strobe. */
+.glow-text {
+  text-shadow: 0 0 0px transparent;
+  transition: text-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glow-text.is-active {
+  text-shadow:
+    0 0 6px rgba(245, 243, 255, 0.55),
+    0 0 22px rgba(139, 92, 246, 0.45),
+    0 0 44px rgba(45, 212, 191, 0.25);
+}
+
+/* -----------------------------------------------------------------
+   SUBTLE 3D TILT
+   Shared utility for elements that lift off the page on hover — a
+   gentle perspective tilt driven by --rx/--ry (set from mouse move).
+------------------------------------------------------------------ */
+.tilt-3d {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+    translateZ(var(--tz, 0px));
+  box-shadow:
+    var(--shadow-x, 0px) var(--shadow-y, 10px) 34px -10px rgba(139, 92, 246, 0.38),
+    var(--shadow-x, 0px) calc(var(--shadow-y, 10px) * 0.5) 18px -6px rgba(45, 212, 191, 0.12),
+    0 6px 16px -10px rgba(0, 0, 0, 0.6);
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
+}
+
+/* Elements inside a .tilt-3d card that should pop forward independently —
+   icons, logos, badges — read as sitting above the card surface, deepening
+   the parallax illusion when the card rotates. */
+.tilt-pop {
+  transform: translateZ(30px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* -----------------------------------------------------------------
+   TOOL BADGES (Skills section)
+   Plain rectangular cards — clean uniform corner radius, no angled
+   cutouts.
+------------------------------------------------------------------ */
+.tool-badge {
+  border-radius: 14px;
+}
+
+/* Holographic shimmer — a rainbow sheen that sweeps across the card
+   ONCE, only when clicked/tapped. No idle/hover looping — it stays
+   completely still until interacted with. Triggered by the
+   `.tool-holo--active` class being toggled on briefly from JS. */
+.tool-holo {
+  position: relative;
+  overflow: hidden;
+}
+.tool-holo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(139, 92, 246, 0.3) 40%,
+    rgba(245, 243, 255, 0.38) 50%,
+    rgba(45, 212, 191, 0.3) 60%,
+    transparent 80%
+  );
+  background-size: 250% 250%;
+  background-position: 0% 0%;
+  mix-blend-mode: color-dodge;
+  opacity: 0;
+  pointer-events: none;
+}
+.tool-holo--active::after {
+  animation: tool-holo-sweep 0.9s ease-out 1;
+}
+@keyframes tool-holo-sweep {
+  0% {
+    background-position: 0% 0%;
+    opacity: 0.55;
+  }
+  70% {
+    opacity: 0.4;
+  }
+  100% {
+    background-position: 100% 100%;
+    opacity: 0;
+  }
+}
+
+/* Tap/click ripple — expands from the touch point and fades out */
+.tool-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.55) 0%,
+    rgba(45, 212, 191, 0.28) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
+}
+
+/* -----------------------------------------------------------------
+   MOBILE / TOUCH PERFORMANCE
+   Backdrop blur, an infinitely-spinning conic-gradient border, and a
+   color-dodge blend sheen are all expensive to composite every frame.
+   On desktop they're a nice touch; on phones they're the main reason
+   scrolling feels janky. Trim them down for coarse-pointer / small
+   screens so motion stays smooth where it matters most.
+------------------------------------------------------------------ */
+@media (max-width: 768px), (pointer: coarse) {
+  /* backdrop-filter forces the compositor to resample everything behind
+     every single glass panel, every frame, for as long as it's on screen —
+     with a dozen+ panels stacked over the animated background this is the
+     single biggest cause of scroll jank on phones. Swapping it for a
+     slightly more opaque flat fill keeps the same "dark glass card" look
+     (no visible background texture shows through either way at this
+     opacity) at a tiny fraction of the GPU cost. */
+  .glass {
+    background: rgba(11, 14, 28, 0.88);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .holo-border::before {
+    animation: none;
+    background: linear-gradient(135deg, #8b5cf6, #2dd4bf, #f5f3ff, #ec4899);
+  }
+
+  .holo-sheen {
+    display: none;
+  }
+
+  .tilt-3d {
+    box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.55);
+    /* These cards never tilt on touch (no touch handler sets --rx/--ry),
+       so the permanent will-change was reserving a compositor layer for
+       transforms that never happen — pure overhead on exactly the devices
+       that can least afford it. */
+    will-change: auto;
+  }
+
+  .hero-glow {
+    animation: none;
+    filter: blur(60px);
+    opacity: 0.22;
+  }
+}
